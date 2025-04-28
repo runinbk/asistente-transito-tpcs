@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.*
+
+# Python virtual environments
+venv/
+.venv/
+
+# Database
+*.db
+*.sqlite3
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Jupyter Notebook checkpoints (por si abres algo)
+.ipynb_checkpoints/
+
+# Mac OS / Windows system files
+.DS_Store
+Thumbs.db
+
+# Others
+*.bak
+*.swp
+*.tmp
+
+# Example files
+*.example.*
