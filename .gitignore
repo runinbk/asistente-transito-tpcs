@@ -38,3 +38,15 @@ Thumbs.db
 
 # Example files
 *.example.*
+
+# Docker compose files
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.prod.yml
+docker-compose.dev.yml
+docker-compose.test.yml
+docker-compose.local.yml
+docker-compose.staging.yml
+docker-compose.ci.yml
+docker-compose.*.yml
+docker-compose.*.yaml
