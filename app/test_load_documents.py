@@ -1,7 +1,7 @@
-from app.services.document_loader import load_documents
+from services.document_loader import load_documents
 
 if __name__ == "__main__":
-    files = ["app/documents/test.txt", "app/documents/test.pdf"]
+    files = ["documents/test.txt"]
     contents = load_documents(files)
 
     for idx, content in enumerate(contents):
