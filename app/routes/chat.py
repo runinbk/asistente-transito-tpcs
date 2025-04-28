@@ -25,3 +25,13 @@ def get_chat_session(session_id: int, db: Session = Depends(get_db)):
     if not session:
         raise HTTPException(status_code=404, detail="Chat session not found")
     return session
+
+@router.delete("/chat_sessions/{session_id}")
+def delete_chat_session(session_id: int, db: Session = Depends(get_db)):
+    session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat session not found")
+    
+    db.delete(session)
+    db.commit()
+    return {"message": "Chat session deleted successfully"}
