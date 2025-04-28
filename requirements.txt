@@ -3,6 +3,7 @@ uvicorn
 openai
 faiss-cpu
 psycopg2-binary
+scikit-learn
 sentence-transformers
 sqlalchemy
 python-dotenv
