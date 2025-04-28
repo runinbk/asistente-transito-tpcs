@@ -3,6 +3,7 @@ uvicorn
 openai
 faiss-cpu
 psycopg2-binary
+sentence-transformers
 sqlalchemy
 python-dotenv
 pydantic
