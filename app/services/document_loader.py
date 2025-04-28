@@ -1,37 +1,21 @@
-
 import os
-from typing import List
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 def load_text_file(file_path: str) -> str:
-    """Carga un archivo de texto plano (.txt)"""
-    if not os.path.exists(file_path):
+    """Carga un archivo de texto plano."""
+    full_path = os.path.join(BASE_DIR, file_path)
+    if not os.path.exists(full_path):
         raise FileNotFoundError(f"No se encontró el archivo: {file_path}")
-    
-    with open(file_path, "r", encoding="utf-8") as file:
-        content = file.read()
-    return content
+    with open(full_path, 'r', encoding='utf-8') as f:
+        return f.read()
 
-def load_pdf_file(file_path: str) -> str:
-    """Carga un archivo PDF y extrae su texto"""
-    from PyPDF2 import PdfReader
-
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"No se encontró el archivo: {file_path}")
-    
-    reader = PdfReader(file_path)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text()
-    return text
-
-def load_documents(file_paths: List[str]) -> List[str]:
-    """Carga una lista de archivos y devuelve una lista de contenidos de texto"""
+def load_documents(file_paths: list) -> list:
+    """Carga múltiples documentos de diferentes tipos."""
     contents = []
     for path in file_paths:
-        if path.lower().endswith(".txt"):
+        if path.endswith(".txt"):
             contents.append(load_text_file(path))
-        elif path.lower().endswith(".pdf"):
-            contents.append(load_pdf_file(path))
         else:
-            raise ValueError(f"Formato de archivo no soportado: {path}")
+            raise ValueError(f"Tipo de archivo no soportado: {path}")
     return contents
