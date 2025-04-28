@@ -15,13 +15,12 @@ class VectorStore:
 
     def search(self, query: str, top_k: int = 3) -> List[Tuple[str, float]]:
         """Busca los documentos más similares al query."""
-        if not self.vectors:
+        if self.vectors is None:
             raise ValueError("No hay documentos cargados.")
 
         query_vec = self.vectorizer.transform([query])
         similarities = cosine_similarity(query_vec, self.vectors).flatten()
 
-        # Obtener los índices de los documentos más similares
         top_indices = similarities.argsort()[-top_k:][::-1]
 
         results = []
