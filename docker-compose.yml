@@ -1,18 +1,21 @@
-version: "3.9"
+version: '3.8'
 
 services:
   db:
-    image: postgres:15
+    image: postgres:14
     container_name: normativa_postgres
     restart: always
+    environment:
+      POSTGRES_USER: normativa_user
+      POSTGRES_PASSWORD: normativa_pass
+      POSTGRES_DB: normativa_db
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: normativa_transito
-      POSTGRES_USER: normativa_user
-      POSTGRES_PASSWORD: tu_contraseña_segura
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - normativa_net
 
-volumes:
-  postgres_data:
+networks:
+  normativa_net:
+    driver: bridge
