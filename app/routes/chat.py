@@ -19,3 +19,9 @@ def create_chat_session(session: ChatSessionCreate, db: Session = Depends(get_db
     db.refresh(new_session)
     return new_session
     
+@router.get("/chat_sessions/{session_id}", response_model=ChatSessionResponse)
+def get_chat_session(session_id: int, db: Session = Depends(get_db)):
+    session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat session not found")
+    return session
