@@ -1,16 +1,21 @@
 from fastapi import FastAPI
-from app.routes import chat, document
-from app.routes.chat import router as ChatRouter
+from app.routes import chat, document, chat_message
+from app.db.database import create_tables
 
 app = FastAPI(
-    title="Agente de Normativa de Tránsito",
-    version="0.1.0"
+    title="Asistente de Tránsito",
+    description="API para gestionar sesiones y mensajes de chat del asistente de tránsito",
+    version="1.0.0"
 )
 
+# Crear tablas en la base de datos al iniciar
+create_tables()
+
 # Registrar routers
-app.include_router(chat.router, prefix="/api")
+app.include_router(chat.router, prefix="/api", tags=["Chat Sessions"])
+app.include_router(chat_message.router, prefix="/api", tags=["Chat Messages"])
 app.include_router(document.router, prefix="/api")
 
 @app.get("/")
 def read_root():
-    return {"message": "API funcionando correctamente 🚀"}
+    return {"message": "¡Bienvenido al asistente de tránsito!"}
