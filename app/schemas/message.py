@@ -3,13 +3,15 @@ from datetime import datetime
 
 class MessageCreate(BaseModel):
     session_id: int
-    content: str
+    sender: str  # <<<<<< Añadido
+    message: str  # <<<<<< Cambiado de 'content' a 'message'
 
 class MessageResponse(BaseModel):
     id: int
     session_id: int
-    content: str
+    sender: str  # <<<<<< Añadido
+    message: str  # <<<<<< Cambiado de 'content' a 'message'
     created_at: datetime
 
     class Config:
-        from_attributes = True  # Antes era orm_mode = True en Pydantic v1
+        from_attributes = True  # Correcto para Pydantic v2
