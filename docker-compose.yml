@@ -16,6 +16,28 @@ services:
     networks:
       - normativa_net
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: normativa_api
+    restart: always
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: normativa_user
+      POSTGRES_PASSWORD: normativa_pass
+      POSTGRES_DB: normativa_db
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    networks:
+      - normativa_net
+
 networks:
   normativa_net:
     driver: bridge
