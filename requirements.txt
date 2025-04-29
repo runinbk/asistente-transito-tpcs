@@ -11,3 +11,7 @@ pydantic
 python-multipart
 PyMuPDF  # Para leer PDFs
 PyPDF2 
+langchain
+faiss-cpu
+openai
+pymupdf
