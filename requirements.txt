@@ -12,6 +12,7 @@ python-multipart
 PyMuPDF  # Para leer PDFs
 PyPDF2 
 langchain
+langchain-community  # AÑADIDO - necesario para OpenAIEmbeddings
 faiss-cpu
 openai
 pymupdf
