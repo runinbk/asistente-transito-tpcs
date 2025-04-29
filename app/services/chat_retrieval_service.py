@@ -1,14 +1,28 @@
-from app.utils.vector_store import VectorStore
 from app.services.document_loader import load_documents
-
-# Instancia global de VectorStore (opcionalmente en el futuro puede mejorarse para persistir en base de datos o archivos)
-vector_store = VectorStore()
+from app.utils.vector_store import add_documents, search
 
 def load_and_store_documents(file_paths: list):
-    """Carga documentos desde archivos y los almacena en el vector store."""
-    documents = load_documents(file_paths)
-    vector_store.add_documents(documents)
+    """
+    Carga documentos desde archivos y los almacena en el vector store.
+    
+    Args:
+        file_paths: Lista de rutas a los archivos
+        
+    Returns:
+        Número de documentos cargados
+    """
+    contents, metadatas = load_documents(file_paths)
+    return add_documents(contents, metadatas)
 
 def query_documents(query: str, top_k: int = 3):
-    """Realiza una búsqueda en los documentos almacenados."""
-    return vector_store.search(query, top_k=top_k)
+    """
+    Realiza una búsqueda en los documentos almacenados.
+    
+    Args:
+        query: Consulta a buscar
+        top_k: Número de resultados a devolver
+        
+    Returns:
+        Lista de documentos similares con sus puntuaciones
+    """
+    return search(query, top_k=top_k)
