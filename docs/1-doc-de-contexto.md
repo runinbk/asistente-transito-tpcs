@@ -120,3 +120,87 @@ faiss-cpu
 **Esta es la única estructura, tecnologías y enfoque que seguiremos hasta terminar esta primera versión.**  
 Todo cambio posterior debe ser previamente discutido.
 
+---
+
+# **Visión General de la Arquitectura**
+
+Tu objetivo sería construir un sistema con estas *grandes piezas*:
+
+1. **Servidor de orquestación (backend principal)**
+   - Será quien maneje: peticiones del cliente móvil, conexión a LLM (OpenAI), contexto, historial, etc.
+   - Aquí utilizarás **LangChain** para orquestar (manejar) toda la lógica.
+
+2. **Motor de recuperación de información (RAG)**
+   - Sistema que busca información precisa en bases de datos vectoriales (por ejemplo, FAISS, Chroma, o Pinecone).
+   - Cuando llega una consulta, en lugar de preguntarle todo a OpenAI directamente, primero recuperas fragmentos relevantes de tus documentos cargados, y luego se los pasas al LLM para que responda.
+
+3. **Base de datos de vectores (Vector Store)**
+   - Donde almacenarás tus documentos procesados como vectores.
+   - Aquí es donde irán las leyes de tránsito, manuales, documentos, etc.
+   - Puede ser local (FAISS, Chroma) o en la nube (Pinecone, Weaviate).
+
+4. **Manejador de contexto e historial de conversación**
+   - Para que tu asistente sepa de qué se habló antes.
+   - Puedes usar herramientas como **LangChain Memory** (`ConversationBufferMemory`, `ConversationSummaryMemory`, etc.).
+   - Esto permitirá mantener el "hilo" de la conversación.
+
+5. **Sistema de sinónimos / Diccionario personalizado**
+   - Necesitas interceptar o preprocesar las consultas del usuario para reemplazar o mapear términos.
+   - Se puede hacer como:
+     - Preprocesamiento del input del usuario antes de mandarlo al LLM.
+     - O enriquecer tu base de datos de vectores agregando las variantes semánticas.
+
+6. **Conexión a LLM**
+   - Te conectarás a OpenAI, Anthropic, u otro modelo vía API.
+   - Pero tu servidor es el que controla qué le mandas al modelo, incluyendo los documentos encontrados + contexto de conversación.
+
+7. **Aplicación móvil (Frontend)**
+   - Que consume tu API/servidor.
+   - Aquí te puedes despreocupar un rato, lo principal ahora es levantar el servidor.
+
+---
+
+# **Flujo de Operación (Simplificado)**
+
+1. El usuario envía una consulta por la app móvil.
+2. El servidor la recibe.
+3. Se aplica normalización: diccionario de sinónimos.
+4. El servidor consulta el **vector store** para recuperar documentos relevantes (RAG).
+5. Combina los documentos + historial de conversación.
+6. Envía todo eso al **LLM** (OpenAI API).
+7. Recibe la respuesta del modelo.
+8. Se guarda el nuevo fragmento en el historial/contexto.
+9. Se devuelve la respuesta al usuario.
+
+---
+
+# **Tecnologías y Herramientas que podrías usar**
+
+| Componente | Opción recomendada |
+|------------|--------------------|
+| **Framework Backend** | FastAPI (Python) |
+| **Orquestador LLM** | LangChain |
+| **Vector Store** | Chroma o FAISS (local) |
+| **Base de Datos "normal"** | PostgreSQL para usuarios, historial |
+| **Memory Manager** | LangChain Memory |
+| **Motor de sinónimos** | Diccionario interno + fuzzy matching ó OpenAI Embeddings |
+| **Modelo LLM** | OpenAI (gpt-3.5, gpt-4) |
+
+---
+
+# **Diagrama rápido (mental)**
+
+```
+App Móvil ---> API Servidor
+               |
+          [LangChain]
+               |
+  +------------------------------+
+  |  Contexto Memoria Historial   |
+  |  Recuperador Vectorial (RAG)  |
+  |  Sinónimos / Normalizador     |
+  |  Conexión LLM (OpenAI API)    |
+  +------------------------------+
+```
+
+---
