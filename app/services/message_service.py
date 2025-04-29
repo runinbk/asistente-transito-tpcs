@@ -6,7 +6,7 @@ def create_message(db: Session, message: MessageCreate):
     db_message = ChatMessage(
         session_id=message.session_id,
         sender=message.sender,
-        message=message.message
+        message=message.message,
     )
     db.add(db_message)
     db.commit()
