@@ -14,4 +14,5 @@ class ChatMessage(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    # Relación con ChatSession
     session = relationship("ChatSession", back_populates="messages")
