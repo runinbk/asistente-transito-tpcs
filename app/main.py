@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import chat, document, chat_message, message
+from app.routes import chat, document, chat_message, message, agent_chat
 
 from app.db.database import engine, Base
 
@@ -16,6 +16,7 @@ app.include_router(chat.router, prefix="/api", tags=["Chat Sessions"])
 app.include_router(chat_message.router, prefix="/api", tags=["Chat Messages"])
 app.include_router(document.router, prefix="/api")
 app.include_router(message.router)
+app.include_router(agent_chat.router)  # Nuevo router para el agente
 
 @app.get("/")
 def read_root():
