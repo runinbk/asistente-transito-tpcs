@@ -3,8 +3,8 @@ import faiss
 import numpy as np
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -13,6 +13,9 @@ load_dotenv()
 
 # Singleton para mantener una única instancia del vector store
 _vector_store_instance = None
+
+# Ruta para guardar el índice FAISS
+FAISS_INDEX_PATH = "faiss_index"
 
 def get_or_create_vector_store():
     """
@@ -26,11 +29,14 @@ def get_or_create_vector_store():
             api_key=os.getenv("OPENAI_API_KEY")
         )
         
+        # Crear directorio para el índice si no existe
+        os.makedirs(FAISS_INDEX_PATH, exist_ok=True)
+        
         # Verificar si existe un índice persistente
-        if os.path.exists("faiss_index") and os.path.isdir("faiss_index"):
+        if os.path.exists(FAISS_INDEX_PATH) and any(os.listdir(FAISS_INDEX_PATH)):
             try:
                 _vector_store_instance = FAISS.load_local(
-                    "faiss_index",
+                    FAISS_INDEX_PATH,
                     embeddings
                 )
                 print("Vector store cargado desde disco.")
@@ -43,9 +49,11 @@ def get_or_create_vector_store():
         else:
             # Crear un vector store vacío
             _vector_store_instance = FAISS.from_documents(
-                documents=[],
+                documents=[Document(page_content="Inicialización del vector store", metadata={})],
                 embedding=embeddings
             )
+            # Guardar el índice inicial
+            _vector_store_instance.save_local(FAISS_INDEX_PATH)
             
     return _vector_store_instance
 
@@ -57,6 +65,10 @@ def add_documents(texts: List[str], metadatas: Optional[List[Dict[str, Any]]] = 
         texts: Lista de textos a añadir
         metadatas: Metadatos asociados a cada texto
     """
+    # Verificar que hay textos para añadir
+    if not texts or len(texts) == 0:
+        return 0
+        
     # Obtener el vector store
     vector_store = get_or_create_vector_store()
     
@@ -69,6 +81,10 @@ def add_documents(texts: List[str], metadatas: Optional[List[Dict[str, Any]]] = 
     # Preparar documentos
     documents = []
     for i, text in enumerate(texts):
+        # Omitir textos vacíos
+        if not text or text.strip() == "":
+            continue
+            
         chunks = text_splitter.split_text(text)
         for j, chunk in enumerate(chunks):
             metadata = {}
@@ -87,7 +103,7 @@ def add_documents(texts: List[str], metadatas: Optional[List[Dict[str, Any]]] = 
         vector_store.add_documents(documents)
         
         # Guardar el índice actualizado
-        vector_store.save_local("faiss_index")
+        vector_store.save_local(FAISS_INDEX_PATH)
     
     return len(documents)
 
@@ -103,13 +119,19 @@ def search(query: str, top_k: int = 3):
         Lista de documentos similares con sus puntuaciones
     """
     vector_store = get_or_create_vector_store()
-    results = vector_store.similarity_search_with_score(query, k=top_k)
     
-    return [
-        {
-            "content": doc.page_content,
-            "metadata": doc.metadata,
-            "score": score
-        }
-        for doc, score in results
-    ]
+    try:
+        results = vector_store.similarity_search_with_score(query, k=top_k)
+        
+        return [
+            {
+                "content": doc.page_content,
+                "metadata": doc.metadata,
+                "score": float(score)  # Convertir a float para asegurar serialización JSON
+            }
+            for doc, score in results
+        ]
+    except Exception as e:
+        import logging
+        logging.error(f"Error en la búsqueda vectorial: {str(e)}")
+        return []
