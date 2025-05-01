@@ -11,5 +11,5 @@ class ChatSessionResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
-        from_attributes = True
+        from_attributes = True  # Para Pydantic v2
+        orm_mode = True  # Para mantener compatibilidad con Pydantic v1
