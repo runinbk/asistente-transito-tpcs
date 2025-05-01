@@ -11,8 +11,26 @@ def load_and_store_documents(file_paths: list):
     Returns:
         Número de documentos cargados
     """
-    contents, metadatas = load_documents(file_paths)
-    return add_documents(contents, metadatas)
+    # Intentar cargar los documentos
+    if not file_paths:
+        return 0
+    
+    try:
+        # Cargar documentos desde las rutas
+        contents, metadatas = load_documents(file_paths)
+        
+        # Verificar que se hayan cargado documentos
+        if not contents or len(contents) == 0:
+            return 0
+            
+        # Añadir documentos al vector store
+        num_docs = add_documents(contents, metadatas)
+        return num_docs
+    except Exception as e:
+        # Loguear el error para debugging
+        import logging
+        logging.error(f"Error al cargar documentos: {str(e)}")
+        raise
 
 def query_documents(query: str, top_k: int = 3):
     """
