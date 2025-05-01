@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.database import Base
@@ -12,7 +12,7 @@ class ChatMessage(Base):
     sender = Column(Text, nullable=False)  # 'user' o 'assistant'
     message = Column(Text, nullable=False)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=func.now(), nullable=False)  # Usar func.now() y marcar como no nulo
 
     # Relación con ChatSession
     session = relationship("ChatSession", back_populates="messages")
