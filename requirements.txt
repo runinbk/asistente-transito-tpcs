@@ -16,3 +16,4 @@ langchain-community  # AÑADIDO - necesario para OpenAIEmbeddings
 faiss-cpu
 openai
 pymupdf
+tiktoken
