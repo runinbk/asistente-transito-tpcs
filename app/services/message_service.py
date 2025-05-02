@@ -15,3 +15,11 @@ def create_message(db: Session, message: MessageCreate):
 
 def get_messages_by_session(db: Session, session_id: int):
     return db.query(ChatMessage).filter(ChatMessage.session_id == session_id).all()
+
+def delete_message(db: Session, message_id: int):
+    message = db.query(ChatMessage).filter(ChatMessage.id == message_id).first()
+    if message:
+        db.delete(message)
+        db.commit()
+        return True
+    return False
