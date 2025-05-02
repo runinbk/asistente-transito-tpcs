@@ -15,8 +15,8 @@ Base.metadata.create_all(bind=engine)
 app.include_router(chat.router, prefix="/api", tags=["Chat Sessions"])
 app.include_router(chat_message.router, prefix="/api", tags=["Chat Messages"])
 app.include_router(document.router, prefix="/api")
-app.include_router(message.router)
-app.include_router(agent_chat.router)  # Nuevo router para el agente
+app.include_router(message.router)  # Este router ahora tiene la lógica del agente integrada
+app.include_router(agent_chat.router)  # Mantenemos este router por compatibilidad
 
 @app.get("/")
 def read_root():
